@@ -1,101 +1,172 @@
-import Image from "next/image";
+"use client"; 
+
+import { useState, useEffect } from 'react';
+import { Button, TextField, Typography, Container, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState(''); 
+  const [address, setAddress] = useState(''); 
+  const [age, setAge] = useState(''); 
+  const [gender, setGender] = useState(''); 
+  const [isRegistered, setIsRegistered] = useState(true);
+  const [users, setUsers] = useState([]);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+
+  useEffect(() => {
+    const storedUsers = JSON.parse(localStorage.getItem('users')) || [];
+    setUsers(storedUsers);
+  }, []);
+
+  const handleRegister = () => {
+    const existingUser = users.find(user => user.username.trim() === username.trim());
+  
+    if (existingUser) {
+      alert('User already registered!');
+      return;
+    }
+    if (password !== confirmPassword) {
+      alert('Passwords do not match!');
+      return;
+    }
+    if (!email || !name || !address || !age || !gender) {
+      alert('All fields are required!');
+      return;
+    }
+
+    const newUser = { username, password, email, name, address, age, gender };
+    const updatedUsers = [...users, newUser];
+    setUsers(updatedUsers);
+    localStorage.setItem('users', JSON.stringify(updatedUsers));
+    alert('Registration successful!');
+    window.location.href = '/dashboard'; 
+    setIsRegistered(false);
+  };
+
+  const handleLogin = () => {
+    const existingUser = users.find(user => user.username === username && user.password === password);
+    if (existingUser) {
+      alert('Login successful!');
+      window.location.href = '/dashboard'; // Redirect to the dashboard
+    } else {
+      alert('Invalid credentials!');
+    }
+  };
+
+  return (
+    <Container maxWidth="xs" className="mt-10">
+      <Typography variant="h4" component="h1" className="mb-4 text-center">
+        {isRegistered ? 'Register' : 'Login'}
+      </Typography>
+      {isRegistered && (
+        <>
+          <TextField
+            label="Name"
+            variant="outlined"
+            fullWidth
+            value={name}
+            onChange={e => setName(e.target.value)}
+            className="mb-2"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
+          <TextField
+            label="Email"
+            variant="outlined"
+            fullWidth
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            className="mb-2"
           />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
+          <TextField
+            label="Address"
+            variant="outlined"
+            fullWidth
+            value={address}
+            onChange={e => setAddress(e.target.value)}
+            className="mb-2"
           />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          <TextField
+            label="Age"
+            type="number"
+            variant="outlined"
+            fullWidth
+            value={age}
+            onChange={e => setAge(e.target.value)}
+            className="mb-2"
+          />
+          <FormControl variant="outlined" fullWidth className="mb-2">
+            <InputLabel>Gender</InputLabel>
+            <Select
+              value={gender}
+              onChange={e => setGender(e.target.value)}
+              label="Gender"
+            >
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value="Male">Male</MenuItem>
+              <MenuItem value="Female">Female</MenuItem>
+              <MenuItem value="Other">Other</MenuItem>
+            </Select>
+          </FormControl>
+          <TextField
+            label="Password"
+            type="password"
+            variant="outlined"
+            fullWidth
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            className="mb-2"
+          />
+          <TextField
+            label="Confirm Password"
+            type="password"
+            variant="outlined"
+            fullWidth
+            value={confirmPassword}
+            onChange={e => setConfirmPassword(e.target.value)}
+            className="mb-2"
+          />
+        </>
+      )}
+      {!isRegistered && (
+        <>
+          <TextField
+            label="Username"
+            variant="outlined"
+            fullWidth
+            value={username}
+            onChange={e => setUsername(e.target.value)}
+            className="mb-2"
+          />
+          <TextField
+            label="Password"
+            type="password"
+            variant="outlined"
+            fullWidth
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            className="mb-2"
+          />
+        </>
+      )}
+      {isRegistered ? (
+        <Button variant="contained" color="primary" fullWidth onClick={handleRegister}>
+          Register
+        </Button>
+      ) : (
+        <Button variant="contained" color="primary" fullWidth onClick={handleLogin}>
+          Login
+        </Button>
+      )}
+      <Typography className="mt-2 text-center">
+        {isRegistered ? 'Already have an account? ' : "Don't have an account? "}
+        <Button onClick={() => setIsRegistered(!isRegistered)} color="secondary">
+          {isRegistered ? 'Login' : 'Register'}
+        </Button>
+      </Typography>
+    </Container>
   );
 }
